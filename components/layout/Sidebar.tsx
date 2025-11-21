@@ -16,6 +16,7 @@ const navItems: NavItem[] = [
   { name: 'Storage Layout', href: '/tanks', icon: '🗄️' },
   { name: 'Temperature Monitor', href: '/temperature', icon: '🌡️' },
   { name: 'Patients', href: '/patients', icon: '👥' },
+  { name: 'Operations Guide', href: '/operations-guide', icon: '📖' },
   { name: 'Reports', href: '/reports', icon: '📊' },
   { name: 'Settings', href: '/settings', icon: '⚙️' },
 ]

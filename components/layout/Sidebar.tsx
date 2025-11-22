@@ -25,7 +25,7 @@ export const Sidebar = () => {
   const pathname = usePathname()
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
+    <aside className="w-64 glass-sidebar min-h-screen">
       <div className="p-6">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>
           CryoTrack
@@ -40,10 +40,10 @@ export const Sidebar = () => {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all ${
                 isActive
-                  ? 'bg-primary text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-primary border border-blue-200/50 shadow-sm'
+                  : 'text-gray-700 hover:bg-white/60'
               }`}
             >
               <span className="text-xl">{item.icon}</span>

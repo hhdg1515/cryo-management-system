@@ -1,10 +1,7 @@
-import type { Metadata } from 'next'
-import './globals.css'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'CryoTrack - Cryopreservation Management System',
-  description: 'Smart cryogenic sample management system for IVF clinics',
-}
+import './globals.css'
+import { LanguageProvider } from '@/lib/i18n/LanguageContext'
 
 export default function RootLayout({
   children,
@@ -13,7 +10,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   )
 }

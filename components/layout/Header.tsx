@@ -1,9 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import { useLanguage } from '@/lib/i18n/LanguageContext'
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { language, setLanguage } = useLanguage()
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'zh' : 'en')
+  }
 
   return (
     <header className="glass-header sticky top-0 z-50 px-6 py-4">
@@ -13,6 +19,16 @@ export const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Language Toggle */}
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:bg-white/50 rounded-xl transition-all font-medium text-sm"
+            title={language === 'en' ? '切换到中文' : 'Switch to English'}
+          >
+            <span className="text-base">🌐</span>
+            <span>{language === 'en' ? '中文' : 'EN'}</span>
+          </button>
+
           {/* Alerts */}
           <button className="relative p-2 text-gray-600 hover:bg-white/50 rounded-xl transition-all">
             <span className="text-xl">🔔</span>

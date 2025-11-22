@@ -1,8 +1,13 @@
+'use client'
+
 import Link from 'next/link'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
+import { useLanguage } from '@/lib/i18n/LanguageContext'
 
 export default function Dashboard() {
+  const { t } = useLanguage()
+
   // Mock data for tanks
   const tanks = [
     { id: 'A', capacity: 80, temperature: -196, status: 'normal' },
@@ -23,25 +28,25 @@ export default function Dashboard() {
           <Card>
             <div className="text-center">
               <div className="text-4xl font-bold text-primary">756</div>
-              <div className="text-gray-600 mt-2">Total Samples</div>
+              <div className="text-gray-600 mt-2">{t.dashboard.totalSamples}</div>
             </div>
           </Card>
           <Card>
             <div className="text-center">
               <div className="text-4xl font-bold text-primary">243</div>
-              <div className="text-gray-600 mt-2">Patients</div>
+              <div className="text-gray-600 mt-2">{t.dashboard.patients}</div>
             </div>
           </Card>
           <Card>
             <div className="text-center">
               <div className="text-4xl font-bold text-primary">8</div>
-              <div className="text-gray-600 mt-2">Tanks</div>
+              <div className="text-gray-600 mt-2">{t.dashboard.tanks}</div>
             </div>
           </Card>
         </div>
 
         {/* Recent Activity */}
-        <Card title="Recent Activity">
+        <Card title={t.dashboard.recentActivity}>
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               <span className="text-2xl">✓</span>
@@ -68,9 +73,9 @@ export default function Dashboard() {
         </Card>
 
         {/* Temperature Status */}
-        <Card title="Temperature Status">
+        <Card title={t.dashboard.temperatureStatus}>
           <div className="mb-4 text-xs text-gray-500 bg-blue-50 border border-blue-200 rounded p-2">
-            📊 Temperature readings recorded manually twice daily (morning/evening) • Last updated: 10 minutes ago
+            {t.dashboard.tempRecordingInfo}
           </div>
           <div className="space-y-3">
             {tanks.slice(0, 6).map((tank) => (
@@ -81,25 +86,25 @@ export default function Dashboard() {
                 }`}
               >
                 <div>
-                  <p className="font-medium">Tank {tank.id}</p>
+                  <p className="font-medium">{t.tanks.tank} {tank.id}</p>
                   <p className="text-sm text-gray-500">
-                    {tank.temperature}°C {tank.status === 'warning' && '⚠️ Warning'}
+                    {tank.temperature}°C {tank.status === 'warning' && `⚠️ ${t.temperature.warning}`}
                   </p>
                 </div>
                 <span className="text-2xl">{tank.status === 'warning' ? '⚠️' : '✅'}</span>
               </div>
             ))}
             <div className="text-center py-2 text-gray-400 text-sm">
-              ... and {tanks.length - 6} more tanks
+              {t.dashboard.moreTanks.replace('{count}', String(tanks.length - 6))}
             </div>
             <Link href="/temperature" className="text-primary hover:underline font-medium text-sm block text-center mt-2">
-              View All Temperatures →
+              {t.dashboard.viewAllTemperatures}
             </Link>
           </div>
         </Card>
 
         {/* Capacity Status */}
-        <Card title="Storage Capacity">
+        <Card title={t.dashboard.storageCapacity}>
           <div className="space-y-3">
             {tanks.slice(0, 6).map((tank) => {
               const getCapacityColor = (capacity: number) => {
@@ -110,7 +115,7 @@ export default function Dashboard() {
               return (
                 <div key={tank.id}>
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm font-medium">Tank {tank.id}</span>
+                    <span className="text-sm font-medium">{t.tanks.tank} {tank.id}</span>
                     <span className="text-sm text-gray-600">{tank.capacity}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -123,10 +128,10 @@ export default function Dashboard() {
               )
             })}
             <div className="text-center py-2 text-gray-400 text-sm border-t pt-3">
-              ... and {tanks.length - 6} more tanks
+              {t.dashboard.moreTanks.replace('{count}', String(tanks.length - 6))}
             </div>
             <Link href="/tanks" className="text-primary hover:underline font-medium text-sm block text-center mt-2">
-              View All Storage →
+              {t.dashboard.viewAllStorage}
             </Link>
           </div>
         </Card>

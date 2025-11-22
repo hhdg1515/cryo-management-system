@@ -2,27 +2,29 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useLanguage } from '@/lib/i18n/LanguageContext'
 
 interface NavItem {
-  name: string
+  key: keyof typeof import('@/lib/i18n/translations').translations.en.common
   href: string
   icon: string
 }
 
 const navItems: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: '🏠' },
-  { name: 'Sample Management', href: '/samples', icon: '📦' },
-  { name: 'Quick Search', href: '/search', icon: '🔍' },
-  { name: 'Storage Layout', href: '/tanks', icon: '🗄️' },
-  { name: 'Temperature Monitor', href: '/temperature', icon: '🌡️' },
-  { name: 'Patients', href: '/patients', icon: '👥' },
-  { name: 'Operations Guide', href: '/operations-guide', icon: '📖' },
-  { name: 'Reports', href: '/reports', icon: '📊' },
-  { name: 'Settings', href: '/settings', icon: '⚙️' },
+  { key: 'dashboard', href: '/dashboard', icon: '🏠' },
+  { key: 'samples', href: '/samples', icon: '📦' },
+  { key: 'search', href: '/search', icon: '🔍' },
+  { key: 'tanks', href: '/tanks', icon: '🗄️' },
+  { key: 'temperature', href: '/temperature', icon: '🌡️' },
+  { key: 'patients', href: '/patients', icon: '👥' },
+  { key: 'operationsGuide', href: '/operations-guide', icon: '📖' },
+  { key: 'reports', href: '/reports', icon: '📊' },
+  { key: 'settings', href: '/settings', icon: '⚙️' },
 ]
 
 export const Sidebar = () => {
   const pathname = usePathname()
+  const { t } = useLanguage()
 
   return (
     <aside className="w-64 glass-sidebar min-h-screen">
@@ -47,7 +49,7 @@ export const Sidebar = () => {
               }`}
             >
               <span className="text-xl">{item.icon}</span>
-              <span className="font-medium">{item.name}</span>
+              <span className="font-medium">{t.common[item.key]}</span>
             </Link>
           )
         })}

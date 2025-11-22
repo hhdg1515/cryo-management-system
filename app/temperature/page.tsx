@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -14,6 +15,7 @@ const tanks = [
     nitrogenLevel: 85,
     status: 'normal',
     lastRefill: '3 days ago',
+    lastReading: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
   },
   {
     id: '2',
@@ -22,6 +24,7 @@ const tanks = [
     nitrogenLevel: 45,
     status: 'warning',
     lastRefill: '7 days ago',
+    lastReading: new Date(Date.now() - 10 * 60 * 1000),
   },
   {
     id: '3',
@@ -30,14 +33,48 @@ const tanks = [
     nitrogenLevel: 92,
     status: 'normal',
     lastRefill: '1 day ago',
+    lastReading: new Date(Date.now() - 10 * 60 * 1000),
   },
 ]
 
+// Mock temperature history
+const temperatureHistory = [
+  { time: '08:00', tankA: -196, tankB: -195, tankC: -196, recordedBy: 'Sarah Chen' },
+  { time: '10:00', tankA: -196, tankB: -194, tankC: -196, recordedBy: 'Sarah Chen' },
+  { time: '12:00', tankA: -196, tankB: -190, tankC: -196, recordedBy: 'Mike Johnson' },
+  { time: '14:00', tankA: -196, tankB: -187, tankC: -196, recordedBy: 'Mike Johnson' },
+  { time: '16:00', tankA: -196, tankB: -185, tankC: -196, recordedBy: 'Sarah Chen' },
+]
+
 export default function TemperaturePage() {
+  const [showRecordModal, setShowRecordModal] = useState(false)
+  const [selectedTank, setSelectedTank] = useState('')
+  const [newTemperature, setNewTemperature] = useState('')
+  const [newNitrogenLevel, setNewNitrogenLevel] = useState('')
+
   const getStatusBadge = (status: string) => {
     if (status === 'normal') return <Badge variant="success">✅ Normal</Badge>
     if (status === 'warning') return <Badge variant="warning">⚠️ Warning</Badge>
     return <Badge variant="danger">🚨 Critical</Badge>
+  }
+
+  const formatLastReading = (date: Date) => {
+    const now = new Date()
+    const diffMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
+
+    if (diffMinutes < 60) return `${diffMinutes} minutes ago`
+    if (diffMinutes < 1440) return `${Math.floor(diffMinutes / 60)} hours ago`
+    return `${Math.floor(diffMinutes / 1440)} days ago`
+  }
+
+  const handleRecordTemperature = () => {
+    // In production, this would save to the database via API
+    console.log('Recording temperature for', selectedTank, newTemperature, newNitrogenLevel)
+    setShowRecordModal(false)
+    setNewTemperature('')
+    setNewNitrogenLevel('')
+    setSelectedTank('')
+    alert('Temperature recorded successfully!')
   }
 
   return (
@@ -46,12 +83,41 @@ export default function TemperaturePage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Temperature Monitoring</h1>
-            <p className="text-gray-600 mt-1">Real-time tank monitoring and alerts</p>
+            <p className="text-gray-600 mt-1">Tank temperature monitoring and manual recording</p>
           </div>
-          <div className="text-sm text-gray-500">
-            Last updated: 2 minutes ago
-          </div>
+          <Button onClick={() => setShowRecordModal(true)}>
+            📝 Record Temperature
+          </Button>
         </div>
+
+        {/* Monitoring Info Card */}
+        <Card>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">ℹ️</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-blue-900 mb-2">Temperature Monitoring System</h3>
+                <div className="text-sm text-blue-800 space-y-1">
+                  <p>
+                    <strong>Current Setup (MVP):</strong> Manual temperature recording
+                  </p>
+                  <p>
+                    • Staff members record temperature readings <strong>twice daily</strong> (morning and evening)
+                  </p>
+                  <p>
+                    • Last readings taken: {formatLastReading(tanks[0].lastReading)}
+                  </p>
+                  <p>
+                    • All records are logged with timestamp and staff name for audit compliance
+                  </p>
+                  <p className="mt-3">
+                    <strong>Future Upgrade:</strong> Automatic temperature sensors will record every 5 minutes with real-time alerts
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {/* Tank Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -66,6 +132,9 @@ export default function TemperaturePage() {
                 <div>
                   <p className="text-sm text-gray-600">Temperature</p>
                   <p className="text-3xl font-bold">{tank.temperature}°C</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Last reading: {formatLastReading(tank.lastReading)}
+                  </p>
                 </div>
 
                 <div>
@@ -94,6 +163,52 @@ export default function TemperaturePage() {
             </Card>
           ))}
         </div>
+
+        {/* Temperature History Table */}
+        <Card title="Today's Temperature Records">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Time</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Tank A</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Tank B</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Tank C</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Recorded By</th>
+                </tr>
+              </thead>
+              <tbody>
+                {temperatureHistory.map((record, index) => (
+                  <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="py-3 px-4 font-medium">{record.time}</td>
+                    <td className="py-3 px-4">
+                      <span className={record.tankA < -190 ? 'text-green-600' : 'text-yellow-600'}>
+                        {record.tankA}°C
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={record.tankB < -190 ? 'text-green-600' : 'text-yellow-600'}>
+                        {record.tankB}°C
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={record.tankC < -190 ? 'text-green-600' : 'text-yellow-600'}>
+                        {record.tankC}°C
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-gray-600 text-sm">{record.recordedBy}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+            <p>
+              💡 <strong>Audit Trail:</strong> Temperature records are kept for 1 year for compliance.
+              All changes are logged with timestamp, staff name, and IP address.
+            </p>
+          </div>
+        </Card>
 
         {/* Temperature Trend */}
         <Card title="24-Hour Temperature Trend">
@@ -175,6 +290,90 @@ export default function TemperaturePage() {
           </div>
         </Card>
       </div>
+
+      {/* Record Temperature Modal */}
+      {showRecordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-2xl font-bold mb-4">Record Temperature Reading</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Tank
+                </label>
+                <select
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={selectedTank}
+                  onChange={(e) => setSelectedTank(e.target.value)}
+                >
+                  <option value="">Choose tank...</option>
+                  <option value="Tank A">Tank A</option>
+                  <option value="Tank B">Tank B</option>
+                  <option value="Tank C">Tank C</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Temperature (°C)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  placeholder="-196"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={newTemperature}
+                  onChange={(e) => setNewTemperature(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nitrogen Level (%)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="85"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={newNitrogenLevel}
+                  onChange={(e) => setNewNitrogenLevel(e.target.value)}
+                />
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
+                <p>
+                  ℹ️ This reading will be recorded with your username and timestamp for audit purposes.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowRecordModal(false)
+                  setSelectedTank('')
+                  setNewTemperature('')
+                  setNewNitrogenLevel('')
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={handleRecordTemperature}
+                disabled={!selectedTank || !newTemperature || !newNitrogenLevel}
+              >
+                Save Reading
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }

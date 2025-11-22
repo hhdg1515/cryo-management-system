@@ -56,6 +56,9 @@ export default function Dashboard() {
 
         {/* Temperature Status */}
         <Card title="Temperature Status">
+          <div className="mb-4 text-xs text-gray-500 bg-blue-50 border border-blue-200 rounded p-2">
+            📊 Temperature readings recorded manually twice daily (morning/evening) • Last updated: 10 minutes ago
+          </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>

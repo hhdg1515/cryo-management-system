@@ -165,7 +165,7 @@ export default function TanksPage() {
                 </h3>
               </div>
               <p className="text-sm text-gray-600">
-                Each canister contains 6 goblets. Click "View Details" to see patient information.
+                Each canister contains 6 goblets. Click &quot;View Details&quot; to see patient information.
               </p>
             </div>
 

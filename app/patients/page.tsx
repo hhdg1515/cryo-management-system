@@ -9,7 +9,7 @@ import Link from 'next/link'
 // Mock data
 const mockPatients = [
   {
-    id: '1',
+    id: 'patient-1',
     patientId: 'JD-20250515',
     firstName: 'Jane',
     lastName: 'Doe',
@@ -19,7 +19,7 @@ const mockPatients = [
     samplesCount: 3,
   },
   {
-    id: '2',
+    id: 'patient-2',
     patientId: 'ML-20240812',
     firstName: 'Mary',
     lastName: 'Lee',
@@ -29,7 +29,7 @@ const mockPatients = [
     samplesCount: 5,
   },
   {
-    id: '3',
+    id: 'patient-3',
     patientId: 'TW-20230623',
     firstName: 'Tom',
     lastName: 'Wang',
@@ -42,6 +42,30 @@ const mockPatients = [
 
 export default function PatientsPage() {
   const [patients] = useState(mockPatients)
+  const [generatingReport, setGeneratingReport] = useState<string | null>(null)
+
+  const handleGenerateReport = async (patientId: string, patientName: string) => {
+    setGeneratingReport(patientId)
+    try {
+      const response = await fetch(`/api/reports/patient/${patientId}`)
+      if (!response.ok) throw new Error('Failed to generate report')
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `Patient_Report_${patientName.replace(' ', '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Error generating report:', error)
+      alert('Failed to generate report. Please try again.')
+    } finally {
+      setGeneratingReport(null)
+    }
+  }
 
   return (
     <DashboardLayout>
@@ -112,8 +136,14 @@ export default function PatientsPage() {
                   <Button variant="outline" size="sm" className="flex-1">
                     View Details
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Generate Report
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleGenerateReport(patient.id, `${patient.firstName}_${patient.lastName}`)}
+                    disabled={generatingReport === patient.id}
+                  >
+                    {generatingReport === patient.id ? 'Generating...' : '📄 Report'}
                   </Button>
                 </div>
               </div>
